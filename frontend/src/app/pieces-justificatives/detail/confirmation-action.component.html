@@ -1,0 +1,45 @@
+<dialog
+  #dialogue
+  class="confirmation"
+  aria-labelledby="confirmation-titre"
+  (cancel)="surAnnulationNative($event)"
+>
+  <form (submit)="valider($event)" novalidate>
+    <h2 id="confirmation-titre">
+      {{ libelleAction[action()] }} la pièce {{ reference() }} ?
+    </h2>
+
+    @if (action() === 'rejeter') {
+      <label for="motif-rejet" class="confirmation__label">Motif du rejet (obligatoire)</label>
+      <textarea
+        id="motif-rejet"
+        rows="6"
+        [value]="motif()"
+        (input)="saisirMotif($event)"
+        [attr.aria-invalid]="erreurMotif() !== null ? 'true' : null"
+        [attr.aria-describedby]="erreurMotif() !== null ? 'motif-aide motif-erreur' : 'motif-aide'"
+      ></textarea>
+      <p id="motif-aide" class="confirmation__aide">
+        {{ longueurMax }} caractères maximum — {{ longueurSaisie() }} saisi(s).
+      </p>
+      @if (erreurMotif() !== null) {
+        <p id="motif-erreur" class="confirmation__erreur" role="alert">
+          {{ messageErreurMotif[erreurMotif()!] }}
+        </p>
+      }
+    } @else {
+      <p>Cette action sera enregistrée dans l'historique de la pièce.</p>
+    }
+
+    @if (erreurEnvoi() !== null) {
+      <p class="message-etat message-etat--alerte" role="alert">{{ erreurEnvoi() }}</p>
+    }
+
+    <div class="confirmation__boutons">
+      <button type="button" (click)="annuler.emit()" [disabled]="enCours()">Annuler</button>
+      <button type="submit" class="bouton-principal" [disabled]="enCours()">
+        {{ enCours() ? 'Envoi en cours…' : 'Confirmer : ' + libelleAction[action()] }}
+      </button>
+    </div>
+  </form>
+</dialog>

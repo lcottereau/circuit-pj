@@ -90,6 +90,15 @@ export class ListeComponent {
     this.referenceOuverte.set(reference);
   }
 
+  /** Remplace la ligne modifiée sans recharger : filtre, tri et recherche sont conservés. */
+  mettreAJourPiece(miseAJour: PieceJustificative): void {
+    const pieces = this.piecesBrutes();
+    if (pieces === null) return;
+    this.piecesBrutes.set(
+      pieces.map((piece) => (piece.reference === miseAJour.reference ? miseAJour : piece)),
+    );
+  }
+
   fermerDetail(): void {
     this.referenceOuverte.set(null);
   }

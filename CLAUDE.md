@@ -89,7 +89,33 @@ réponse.
   trouvés et corrigés (badge de statut « validée », message d'erreur — voir
   `tasks.md` T022). Non-régression vérifiée : les 18 tests de la
   fonctionnalité 001 passent toujours.
-- Prochaine fonctionnalité : à spécifier avec `/specify`.
+- **Fonctionnalité 003** (`specs/003-traitement-pj/`) : valider, rejeter
+  (motif obligatoire, jusqu'à 10 000 caractères), suspendre, reprendre et
+  réouvrir une PJ depuis le détail de l'écran de suivi. **25/25 tâches
+  terminées (2026-10-14).** Habilitation unique « Traitement des PJ »
+  contrôlée côté serveur ; disponibilité des actions calculée par le
+  serveur et seulement affichée par l'interface (plan D2) ; concurrence
+  gérée par numéro de version (D4, 409 `PJ_MODIFIEE`) ; historique en ajout
+  seul garanti par le magasin. `npx tsc --noEmit` et `npm test` (backend,
+  63 tests), `ng build` et `ng test` (frontend, 43 tests) passent.
+  **Vérifié dans un navigateur réel** (S1 à S5, conflit, motif de 10 000
+  caractères, mode sans habilitation de traitement, clavier, contrastes —
+  voir `tasks.md` T050 et T051).
+- **Risque accepté, à ne pas oublier** : l'auteur inscrit dans l'historique
+  lors d'un traitement provient de l'identité **simulée**
+  (`backend/src/auth/current-user.stub.ts`, désormais aussi pour
+  l'habilitation « Traitement des PJ », désactivable par
+  `STUB_SANS_HABILITATION_TRAITEMENT=true`). Une validation n'est donc pas
+  réellement imputable à une personne (spec 003, décision n° 10). Les
+  actions ne survivent pas à un redémarrage du backend (décision n° 11).
+- Points ouverts signalés pendant la 003, non traités :
+  - `ng build` émet un avertissement de budget (bundle initial ≈ 511 ko
+    pour un budget de 500 ko, sous le seuil d'erreur) — le budget n'a pas
+    été modifié ;
+  - le plan 001 annonçait Zod côté backend aux frontières ; seule la route
+    d'écriture de la 003 l'utilise, les `GET` de la 001 ne valident pas
+    leur paramètre `:reference`.
+- Prochaine fonctionnalité : à spécifier avec `/specify` (numéro `004`).
 
 ## Lancer l'application
 

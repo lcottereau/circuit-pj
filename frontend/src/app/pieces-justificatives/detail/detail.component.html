@@ -17,6 +17,45 @@
     </span>
   </p>
 
+  <section class="actions-pj" aria-labelledby="titre-actions">
+    <h3 id="titre-actions">Actions</h3>
+    <p role="status" class="annonce-statut">{{ annonce() }}</p>
+    @if (messageAction() !== null) {
+      <p role="alert" class="message-etat message-etat--alerte">{{ messageAction() }}</p>
+    }
+    <div class="actions-pj__liste" role="group" aria-labelledby="titre-actions">
+      @for (disponibilite of detail()!.actions; track disponibilite.action) {
+        <div class="actions-pj__item">
+          <button
+            #bouton
+            type="button"
+            [attr.aria-disabled]="disponibilite.disponible ? null : 'true'"
+            [attr.aria-describedby]="disponibilite.disponible ? null : 'explication-' + disponibilite.action"
+            (click)="demanderAction(disponibilite, bouton)"
+          >
+            {{ libelleAction[disponibilite.action] }}
+          </button>
+          @if (!disponibilite.disponible) {
+            <span class="actions-pj__explication" id="explication-{{ disponibilite.action }}">
+              {{ explicationIndisponibilite(disponibilite, detail()!.statut) }}
+            </span>
+          }
+        </div>
+      }
+    </div>
+  </section>
+
+  @if (actionDemandee(); as demande) {
+    <app-confirmation-action
+      [action]="demande.action"
+      [reference]="detail()!.reference"
+      [enCours]="enCours()"
+      [erreurEnvoi]="erreurEnvoi()"
+      (confirmer)="confirmerAction($event)"
+      (annuler)="fermerConfirmation()"
+    />
+  }
+
   <h3>Historique</h3>
   @if (detail()!.historique.length === 0) {
     <p class="message-etat message-etat--neutre">
@@ -32,7 +71,7 @@
           </span>
           — {{ entree.auteur }}
           @if (entree.motif) {
-            <span> — motif : {{ entree.motif }}</span>
+            <span> — motif : <span class="historique__motif">{{ entree.motif }}</span></span>
           }
         </li>
       }

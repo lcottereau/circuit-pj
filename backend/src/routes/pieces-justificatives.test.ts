@@ -1,7 +1,8 @@
-import { test, before, after } from 'node:test';
+import { test, before, after, beforeEach } from 'node:test';
 import assert from 'node:assert/strict';
 import type { Server } from 'node:http';
 import { createApp } from '../app.js';
+import { reinitialiserPiecesJustificatives } from '../data/pieces-justificatives.js';
 
 let server: Server;
 let baseUrl: string;
@@ -14,6 +15,10 @@ before(async () => {
     throw new Error('Adresse de serveur de test inattendue');
   }
   baseUrl = `http://127.0.0.1:${address.port}`;
+});
+
+beforeEach(() => {
+  reinitialiserPiecesJustificatives();
 });
 
 after(async () => {

@@ -213,3 +213,108 @@ li:last-child {
   border: 1px solid var(--couleur-danger);
   font-weight: 500;
 }
+
+/* Actions de traitement (spec 003, plan D5) — une action indisponible reste
+   visible, focalisable, et son explication est affichée à côté. */
+.actions-pj__liste {
+  margin: 8px 0 0;
+}
+.actions-pj__item {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 8px 12px;
+  padding: 6px 0;
+}
+.actions-pj__item button {
+  min-width: 110px;
+}
+.actions-pj__explication {
+  font-size: 14px;
+  color: var(--texte-secondaire);
+}
+button[aria-disabled='true'] {
+  background: #f0f0f0;
+  border-color: var(--bordure);
+  color: var(--texte-secondaire);
+  cursor: not-allowed;
+}
+button[aria-disabled='true']:hover {
+  background: #f0f0f0;
+}
+
+/* Boîte de confirmation (spec 003, plan section 3) */
+dialog.confirmation {
+  max-width: 640px;
+  width: calc(100% - 32px);
+  border: 1px solid var(--bordure);
+  border-radius: 6px;
+  padding: 24px;
+  color: var(--texte-principal);
+}
+dialog.confirmation::backdrop {
+  background: rgba(0, 0, 0, 0.45);
+}
+dialog.confirmation h2 {
+  margin-top: 0;
+}
+.confirmation__label {
+  display: block;
+  font-weight: 500;
+  margin-bottom: 6px;
+}
+dialog.confirmation textarea {
+  width: 100%;
+  font-family: var(--famille-police);
+  font-size: 14px;
+  padding: 8px 12px;
+  border: 1px solid #767676;
+  border-radius: 4px;
+  resize: vertical;
+}
+dialog.confirmation textarea[aria-invalid='true'] {
+  border: 2px solid var(--couleur-danger);
+}
+textarea:focus-visible {
+  outline: 3px solid var(--couleur-primaire);
+  outline-offset: 2px;
+}
+.confirmation__aide {
+  font-size: 13px;
+  color: var(--texte-secondaire);
+  margin: 4px 0 0;
+}
+.confirmation__erreur {
+  color: #a2172a;
+  font-weight: 500;
+  margin: 8px 0 0;
+}
+.confirmation__boutons {
+  display: flex;
+  justify-content: flex-end;
+  gap: 12px;
+  margin-top: 20px;
+}
+.bouton-principal {
+  background: var(--couleur-primaire);
+  color: #ffffff;
+}
+.bouton-principal:hover {
+  background: #173b6a;
+}
+button:disabled {
+  cursor: wait;
+}
+/* Région live toujours rendue (jamais display: none), sinon l'annonce peut être ignorée. */
+.annonce-statut {
+  margin: 0;
+  font-weight: 500;
+  color: #166042;
+}
+
+/* Motif d'historique (spec 003, CA2.4) : affiché en texte (interpolation,
+   jamais innerHTML), retours à la ligne conservés, sans débordement. */
+.historique__motif {
+  white-space: pre-line;
+  overflow-wrap: anywhere;
+}

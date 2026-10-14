@@ -3,6 +3,12 @@ import { provideHttpClient } from '@angular/common/http';
 import { HttpTestingController, provideHttpClientTesting } from '@angular/common/http/testing';
 import { ListeComponent } from './liste.component';
 import type { PieceJustificative } from '../pieces-justificative.schema';
+import type { PieceJustificativeDetail } from '../piece-justificative-detail.schema';
+
+/** Disponibilités d'actions minimales pour les jeux de test (spec 003). */
+const ACTIONS_INDISPONIBLES: PieceJustificativeDetail['actions'] = (
+  ['valider', 'rejeter', 'suspendre', 'reprendre', 'reouvrir'] as const
+).map((action) => ({ action, disponible: false, raison: 'TRANSITION_INTERDITE' as const }));
 
 const PIECES: PieceJustificative[] = [
   { reference: 'PJ-A', libelle: 'Facture électricité', dateDepot: '2026-08-01', statut: 'Validee' },
@@ -76,6 +82,8 @@ describe('ListeComponent', () => {
       libelle: 'Facture électricité',
       dateDepot: '2026-08-01',
       statut: 'Validee',
+      version: 0,
+      actions: ACTIONS_INDISPONIBLES,
       historique: [],
     });
     fixture.detectChanges();
@@ -84,5 +92,39 @@ describe('ListeComponent', () => {
     fixture.detectChanges();
 
     expect(referencesAffichees(fixture)).toEqual(['PJ-A']);
+  });
+
+  it('répercute un changement de statut sans recharger, filtre, tri et recherche conservés (spec 003, D7)', () => {
+    const fixture = creerComposant();
+    fixture.componentInstance.changerStatutsFiltres(new Set(['EnCoursValidation', 'Validee']));
+    fixture.componentInstance.changerTexteRecherche('a');
+    fixture.componentInstance.basculerSensTri();
+    fixture.detectChanges();
+    expect(referencesAffichees(fixture)).toEqual(['PJ-A', 'PJ-B']);
+
+    fixture.componentInstance.mettreAJourPiece({
+      reference: 'PJ-B',
+      libelle: 'Mandat travaux',
+      dateDepot: '2026-08-05',
+      statut: 'Validee',
+    });
+    fixture.detectChanges();
+
+    httpMock.expectNone('/api/pieces-justificatives');
+    expect(referencesAffichees(fixture)).toEqual(['PJ-A', 'PJ-B']);
+    const ligneB = Array.from((fixture.nativeElement as HTMLElement).querySelectorAll('tbody tr')).find(
+      (tr) => tr.textContent?.includes('PJ-B'),
+    )!;
+    expect(ligneB.textContent).toContain('Validée');
+    expect(ligneB.textContent).not.toContain('En cours de validation');
+
+    fixture.componentInstance.mettreAJourPiece({
+      reference: 'PJ-A',
+      libelle: 'Facture électricité',
+      dateDepot: '2026-08-01',
+      statut: 'Suspendue',
+    });
+    fixture.detectChanges();
+    expect(referencesAffichees(fixture)).toEqual(['PJ-B']);
   });
 });
